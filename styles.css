@@ -1,0 +1,349 @@
+:root {
+  /* 1u = 1px макета (ширина макета 1920px), всё масштабируется по ширине окна */
+  --u: calc(100vw / 1920);
+  --yellow: #fdd500;
+  --ink: #1f1f1f;
+  --font: 'Grandis Extended', 'Unbounded', 'Arial Black', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { overflow-x: hidden; background: #000; }
+
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; user-select: none; -webkit-user-drag: none; }
+
+/* ---------- Hero ---------- */
+
+.hero {
+  position: relative;
+  height: max(100vh, calc(1080 * var(--u)));
+  overflow: hidden;
+  background: #000;
+}
+
+/* ---------- Фон ---------- */
+
+.bg {
+  position: absolute;
+  left: calc(-12.398 * var(--u));
+  top: calc(160 * var(--u));
+  width: calc(1944.717 * var(--u));
+  height: calc(794.24 * var(--u));
+  overflow: visible;
+  pointer-events: none;
+}
+
+.bg__ambient {
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+
+.hero[data-active] .bg__ambient { opacity: 1; }
+
+/* ---------- Кольцо ---------- */
+
+.ring {
+  position: absolute;
+  left: calc(607 * var(--u));
+  top: calc(360.5 * var(--u));
+  width: calc(697.5 * var(--u));
+  height: calc(417 * var(--u));
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ring__word {
+  fill: #fff;
+  pointer-events: auto;
+  transition: fill .25s ease;
+}
+
+.ring__word.is-active { fill: var(--yellow); }
+
+/* ---------- Головы ---------- */
+
+.head {
+  position: absolute;
+  display: block;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.head--client {
+  left: calc(447 * var(--u)); top: calc(378 * var(--u));
+  width: calc(282 * var(--u)); height: calc(327 * var(--u));
+  --eye-l: 36.3% 52.4%;
+  --eye-r: 65.6% 52.7%;
+  --eye-size: 21% 12%;
+}
+
+.head--developer {
+  left: calc(817 * var(--u)); top: calc(363 * var(--u));
+  width: calc(285 * var(--u)); height: calc(342 * var(--u));
+  --cheek-l: 29% 66%;
+  --cheek-r: 71% 66%;
+  --cheek-size: 17% 9%;
+}
+
+.head--agent {
+  left: calc(1204 * var(--u)); top: calc(394 * var(--u));
+  width: calc(254 * var(--u)); height: calc(311 * var(--u));
+}
+
+.head__lift,
+.head__face {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+}
+
+.head__lift {
+  transition: transform .45s cubic-bezier(.22, 1.5, .36, 1);
+}
+
+.head.is-active .head__lift {
+  transform: translateY(calc(-10 * var(--u))) scale(1.04);
+}
+
+.head__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* серая версия проявляется у «чужих» голов, пока наведена одна из голов */
+.head__gray {
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+.hero[data-active="client"] .head:not(.head--client) .head__gray,
+.hero[data-active="developer"] .head:not(.head--developer) .head__gray,
+.hero[data-active="agent"] .head:not(.head--agent) .head__gray {
+  opacity: 1;
+}
+
+/* ---------- Эмоции ---------- */
+
+/* Мимика: script.js собирает SVG-фильтры (карты смещения) и анимирует их силу,
+   а здесь — только подключение фильтра и «телесные» движения головы. */
+
+.fx-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.head--client    { --fx: url(#fx-client); }
+.head--developer { --fx: url(#fx-developer); }
+.head--agent     { --fx: url(#fx-agent); }
+
+.head.is-fx .head__color { filter: var(--fx); }
+
+/* клиент — удивление: подпрыгивает */
+.head--client.is-active .head__face { animation: surprise .7s cubic-bezier(.3, .7, .4, 1) both; }
+
+@keyframes surprise {
+  0%   { transform: none; }
+  18%  { transform: translateY(-5%) scale(.96, 1.08); }
+  40%  { transform: translateY(0) scale(1.06, .93); }
+  60%  { transform: translateY(-1.5%) scale(.99, 1.03); }
+  100% { transform: none; }
+}
+
+/* застройщик — улыбка: слегка покачивается */
+.head--developer.is-active .head__face { animation: smile .8s ease-in-out both; }
+
+@keyframes smile {
+  0%   { transform: none; }
+  30%  { transform: rotate(-3.5deg) scale(1.04, .97); }
+  65%  { transform: rotate(2.5deg) scale(1.02, .99); }
+  100% { transform: none; }
+}
+
+/* агент — подмигивание: левый глаз закрывается «веком» (кусочек щеки поверх глаза), голова наклоняется */
+.wink {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 16% 9.6% at 33.5% 50.4%, #000 64%, transparent 100%);
+          mask-image: radial-gradient(ellipse 16% 9.6% at 33.5% 50.4%, #000 64%, transparent 100%);
+  transform-origin: 33.5% 44%;
+  transform: scaleY(0);
+}
+
+.wink__patch {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateY(calc(-27 * var(--u)));
+}
+
+.wink__lash {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.wink__lash path {
+  fill: none;
+  stroke: #6b4a12;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+}
+
+.head--agent.is-active .head__face { animation: wink-tilt .9s ease-in-out both; }
+.head--agent.is-active .wink { animation: wink-lid .9s ease-in-out both; }
+.head--agent.is-active .wink__lash { animation: wink-lash .9s ease-in-out both; }
+
+@keyframes wink-lid {
+  0%   { transform: scaleY(0); }
+  16%  { transform: scaleY(1); }
+  69%  { transform: scaleY(1); }
+  94%, 100% { transform: scaleY(0); }
+}
+
+@keyframes wink-lash {
+  0%, 14% { opacity: 0; }
+  20%, 66% { opacity: .9; }
+  72%, 100% { opacity: 0; }
+}
+
+@keyframes wink-tilt {
+  0%   { transform: none; }
+  18%  { transform: rotate(-4deg) translateY(-1%); }
+  70%  { transform: rotate(-4deg) translateY(-1%); }
+  100% { transform: none; }
+}
+/* ---------- Текст ---------- */
+
+.texts {
+  position: absolute;
+  left: calc(462 * var(--u));
+  top: calc(866 * var(--u));
+  width: calc(996 * var(--u));
+  display: grid;
+  text-align: center;
+  pointer-events: none;
+}
+
+.text {
+  grid-area: 1 / 1;
+  margin: 0;
+  font-size: calc(20 * var(--u));
+  line-height: calc(40 * var(--u));
+  font-weight: 300;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(calc(8 * var(--u)));
+  transition: opacity .3s ease, transform .3s ease, visibility 0s linear .3s;
+}
+
+.text.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: .08s, .08s, 0s;
+}
+
+.accent {
+  font-size: calc(30 * var(--u));
+  color: var(--yellow);
+}
+
+/* ---------- Шапка ---------- */
+
+.nav {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: calc(20 * var(--u)) calc(15 * var(--u));
+}
+
+.nav__logo {
+  display: block;
+  margin-top: calc(9 * var(--u));
+}
+
+.nav__logo img {
+  width: calc(82 * var(--u));
+  height: calc(18 * var(--u));
+}
+
+.nav__right {
+  display: flex;
+  align-items: center;
+  gap: calc(40 * var(--u));
+}
+
+.nav__select {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  font: 300 calc(14 * var(--u)) / 1 var(--font);
+  cursor: pointer;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(36 * var(--u));
+  padding: 0 calc(10 * var(--u));
+  border-radius: calc(8 * var(--u));
+  background: var(--yellow);
+  color: var(--ink);
+  font: 500 calc(14 * var(--u)) / 1 var(--font);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ---------- Курсор ---------- */
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 20;
+  width: 19px;
+  height: 22px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  will-change: transform;
+}
+
+.cursor.is-visible { opacity: 1; }
+
+@media (hover: hover) and (pointer: fine) {
+  .hero.has-cursor,
+  .hero.has-cursor * { cursor: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .head__face { animation: none !important; }
+  .head__lift, .text, .ring__word, .head__gray { transition-duration: .01s; }
+}

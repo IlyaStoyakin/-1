@@ -1,0 +1,8 @@
+# исходники из макета в корне — рабочие копии лежат в assets/
+/Vector.svg
+/Слой *.png
+
+# служебное
+.claude/
+Thumbs.db
+.DS_Store
