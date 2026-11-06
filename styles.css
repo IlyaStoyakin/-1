@@ -206,7 +206,7 @@ img { display: block; user-select: none; -webkit-user-drag: none; }
 
 .wink__lash path {
   fill: none;
-  stroke: #6b4a12;
+  stroke: #8a2a55;
   stroke-width: 4.5;
   stroke-linecap: round;
 }
